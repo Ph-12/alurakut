@@ -21,6 +21,29 @@ function ProfileSidebar(pHroprieda) {
   );
 }
 
+function ProfileRelationsBox(props) {
+     return(
+          
+          <ProfileRelationsBoxWrapper>
+               <h2 className="smallTitle">
+                    {props.title} ({props.items.length}
+                    )
+               </h2>
+               <ul>
+                    {/* {seguidores.map((itemAtual) => (
+                         <li key={itemAtual}>
+                         <a href={`https://github.com/${itemAtual}.png`}>
+                              <img src={itemAtual.image} />
+                              <span>{itemAtual.title}</span>
+                         </a>
+                         </li>
+                    ))} */}
+               </ul>
+          </ProfileRelationsBoxWrapper>
+     )
+}
+
+
 export default function Home() {
   const userName = 'ph-12';
   const pessoasFavoritas = ['juunegreiros', 'omariosouto', 'peas', 'rafaballerini', 'marcobrunodev', 'felipefialho'];
@@ -37,6 +60,25 @@ export default function Home() {
 
   console.log(comunidades);
 
+//API GITHUB
+     const [seguidores, setSeguidores] = React.useState([]);
+     React.useEffect(function(){
+          fetch('https://api.github.com/users/peas/followers')
+          .then(function (respostaDoServidor) {
+          if(respostaDoServidor.ok){
+               return respostaDoServidor.json()
+          }
+          throw new Error('Aconteceu algum problema :(' + respostaDoServidor.status)
+          })
+          .then(function (respostaConvertida) {
+               setSeguidores(respostaConvertida)
+          })
+          .catch(function (erro) {
+               console.error(erro)
+          })
+     }, [])
+
+//Base alurakut
   return (
     <>
       <AlurakutMenu />
@@ -100,27 +142,12 @@ export default function Home() {
         </div>
 
         <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
-          <Box>
-            <h1 className="title">
-              Melhores Amigos
-            </h1>
-          </Box>
-          <ProfileRelationsBoxWrapper>
-            <ul>
-              {comunidades.map((itemAtual) => (
-                <li key={itemAtual.id}>
-                  <a href={`/user/${itemAtual.title}`}>
-                    <img src={itemAtual.image} />
-                    <span>{itemAtual.title}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </ProfileRelationsBoxWrapper>
+          
+          <ProfileRelationsBox title="seguidores" items={seguidores}/>
 
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
-              Pessoas da comunidade (
+              Melhores do github (
               {pessoasFavoritas.length}
               )
             </h2>
@@ -135,6 +162,27 @@ export default function Home() {
               ))}
             </ul>
           </ProfileRelationsBoxWrapper>
+
+          <ProfileRelationsBoxWrapper>
+               <h2 className="smallTitle">
+              Minhas comunidades (
+              {comunidades.length}
+              )
+            </h2>
+            <ul>
+              {comunidades.map((itemAtual) => (
+                <li key={itemAtual.id}>
+                  <a href={`/user/${itemAtual.title}`}>
+                    <img src={itemAtual.image} />
+                    <span>{itemAtual.title}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </ProfileRelationsBoxWrapper>
+
+
+          
         </div>
       </MainGrid>
     </>
